@@ -9,7 +9,7 @@ CORS(app)
 def test():
     return jsonify("working")
 
-@app.route("/")
+@app.route("/store")
 def storeData():
     url = request.args.get('url')
     r = requests.get(url = url)
