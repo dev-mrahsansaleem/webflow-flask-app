@@ -126,7 +126,8 @@ def sendImage():
 @app.route("/api/image", methods=['GET'])
 def getImage():
     fileName = request.args.get('file') # "profile_796673148185972.JPEG" 
-    return send_file("./images/", fileName)
+    # return send_file('\images\orignal_1431232023970388.png')
+    return send_file(os.getcwd() + '/images/' + fileName)
     pass
 
 @app.route("/api/domains", methods=['GET'])
