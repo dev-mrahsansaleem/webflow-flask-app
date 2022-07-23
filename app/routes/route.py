@@ -104,7 +104,7 @@ def sendImage():
             "sitePublishQueued" : sitePublishQueued
             })
     else:
-        jsonify(data)
+        jsonify({"data":data,"msg":"erro"})
 
 
 
