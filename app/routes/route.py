@@ -30,7 +30,11 @@ def sendImage():
     arrData = re.split('<\/?script>',get_resp.text) # split by script open close tags
     data = [x for x in arrData if "props" in x]
     if len(data) <= 0 :
-        return jsonify({"data":data,"msg":"erro"})
+        return jsonify({
+            "data":data,
+            "msg":"erro",
+            "arr":arrData
+            })
     
     start = data[0].find('"require"') 
     end = data[0].rfind(',"contexts')
