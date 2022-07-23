@@ -6,4 +6,4 @@ app = Flask(__name__)
 from app.config import config
 
 # routes
-from app.routes import imageRoute
+from app.routes import route

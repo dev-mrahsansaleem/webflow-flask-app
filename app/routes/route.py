@@ -18,7 +18,7 @@ def test():
 
 
 
-@app.route("/api/Image", methods=['POST'])
+@app.route("/api/image", methods=['POST'])
 def sendImage():
     if not isdir(app.config['UPLOAD_FOLDER']):
         mkdir(app.config['UPLOAD_FOLDER'])
@@ -37,6 +37,7 @@ def sendImage():
     data = {
         "fields": {
             "name": props['deeplinkAdID'], #need to change to find ad title always
+            "slug": props['deeplinkAdID'],
             "ad-id": props['deeplinkAdID'],
             "ad-title": props['deeplinkAdCard']['snapshot']["cards"][0]["title"] if len(props['deeplinkAdCard']['snapshot']["cards"]) > 0 else "",
             "ad-body": props['deeplinkAdCard']['snapshot']["cards"][0]["body"] if len(props['deeplinkAdCard']['snapshot']["cards"]) > 0 else "",
@@ -61,19 +62,22 @@ def sendImage():
         }
     # profile picture store
     imagObj = Image.open(BytesIO(requests.get(props['deeplinkAdCard']['snapshot']['page_profile_picture_url']).content))
-    data['fields']['page-profile-picture']  = app.config['BASE_APP_URL'] + 'profile_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
-    imagObj.save(app.config['UPLOAD_FOLDER'] + data['fields']['page-profile-picture'])
+    image_name = 'profile_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
+    imagObj.save(app.config['UPLOAD_FOLDER'] + image_name)
+    data['fields']['page-profile-picture']  = app.config['BASE_APP_URL'] + image_name
 
     if len(props['deeplinkAdCard']['snapshot']["cards"]) > 0:
         # resized image
         imagObj = Image.open(BytesIO(requests.get(props['deeplinkAdCard']['snapshot']["cards"][0]["resized_image_url"]).content))
-        data['fields']['ad-resized-image']  = app.config['BASE_APP_URL'] + 'resized_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
-        imagObj.save(app.config['UPLOAD_FOLDER'] + data['fields']['ad-resized-image'])
+        image_name = 'resized_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
+        imagObj.save(app.config['UPLOAD_FOLDER'] + image_name)
+        data['fields']['ad-resized-image']  = app.config['BASE_APP_URL'] + image_name
             
         # orignal image
         imagObj = Image.open(BytesIO(requests.get(props['deeplinkAdCard']['snapshot']["cards"][0]["original_image_url"]).content))
-        data['fields']['ad-original-image']  = app.config['BASE_APP_URL'] + 'orignal_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
-        imagObj.save(app.config['UPLOAD_FOLDER'] + data['fields']['ad-original-image'] )
+        image_name = 'orignal_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
+        imagObj.save(app.config['UPLOAD_FOLDER'] + image_name)
+        data['fields']['ad-original-image']  = app.config['BASE_APP_URL'] + image_name
 
     # return jsonify(data)
 
@@ -84,18 +88,36 @@ def sendImage():
     }
     dump = json.dumps(data)
     post_resp = requests.post(url = "https://api.webflow.com/collections/62daf04048a18d41dc374c6f/items?live=true",data=dump,headers=headers)
-    pprint(post_resp)
+    sitePublishQueued = False
+    if post_resp.status_code == 200:
+        dump = json.dumps({"domains": app.config['SITE_ID']})
+        resp = requests.post(url = "https://api.webflow.com/sites/"+ app.config['SITE_ID'] + "/publish",data=dump,headers=headers)
+        sitePublishQueued = resp.json()
+
     return jsonify({
         "code":post_resp.status_code,
         "msg":'created',
-        "data":post_resp.text
+        "data":post_resp.json(),
+        "sitePublishQueued" : sitePublishQueued
         })
 
 
 
-@app.route("/api/Image", methods=['GET'])
+@app.route("/api/image", methods=['GET'])
 def getImage():
     fileName = request.args.get('file') # "profile_796673148185972.JPEG" 
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], fileName))
+    pass
+
+@app.route("/api/domains", methods=['GET'])
+def getDomains():
+    
+    headers = {
+    'content-type': 'application/json',
+    "Authorization":"Bearer f789b409bf0afe37e052522a4df7cdc1f99fe908d20ac4043df7e831d629a97e"
+    }
+    resp = requests.get(url = "https://api.webflow.com/sites/"+ app.config['SITE_ID'] + "/domains",headers=headers)
+        
+    return jsonify(resp.json())
     pass
 
