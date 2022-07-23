@@ -6,14 +6,14 @@ CORS(app)
 
 app.debug = True
 UPLOAD_FOLDER = os.getcwd() + '\\images\\'
-BASE_APP_URL = "http://127.0.0.1:5000/api/image?file="
+BASE_APP_URL = "https://flask-api6389.herokuapp.com/api/image?file="
 SITE_ID = '62cecd2cf858d8026c165bfe'
 PUBLISH_DOMAIN = ['https://swipefiled.webflow.io']
 # <meta http-equiv="refresh" content="90" > auto refresh front end
 
 
-ENV = 'PROD'
-# ENV = 'DEV'
+# ENV = 'PROD'
+ENV = 'DEV'
 
 if ENV == 'PROD':
     app.debug = False

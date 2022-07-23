@@ -51,7 +51,7 @@ def sendImage():
             "link-url": props['deeplinkAdCard']['snapshot']["link_url"],
             "page-id": str(props['deeplinkAdCard']['pageID']),
             "page-name": props['deeplinkAdCard']['pageName'],
-            "page-profile-picture-2": "",
+            "profile-picture": "",
             "page-categories": " ".join([item for item in props['deeplinkAdCard']['snapshot']['page_categories'].values()]),
             "page-url": props['deeplinkAdCard']['snapshot']["page_profile_uri"],
             "media-type": props['mediaType'],
@@ -64,7 +64,7 @@ def sendImage():
     imagObj = Image.open(BytesIO(requests.get(props['deeplinkAdCard']['snapshot']['page_profile_picture_url']).content))
     image_name = 'profile_' + props['deeplinkAdID'] + "."+ imagObj.format.lower()
     imagObj.save(app.config['UPLOAD_FOLDER'] + image_name)
-    data['fields']['page-profile-picture-2']  = app.config['BASE_APP_URL'] + image_name
+    data['fields']['profile-picture']  = app.config['BASE_APP_URL'] + image_name
 
     if len(props['deeplinkAdCard']['snapshot']["cards"]) > 0:
         # resized image
