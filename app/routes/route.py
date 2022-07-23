@@ -29,7 +29,9 @@ def sendImage():
     # data = re.sub('\s+',"",data) # remove all spaces
     arrData = re.split('<\/?script>',get_resp.text) # split by script open close tags
     data = [x for x in arrData if "props" in x]
-    data = '{'+data[0][data[0].find('"require"'):data[0].rfind(',"contexts')]+'}'
+    start = data[0].find('"require"') 
+    end = data[0].rfind(',"contexts')
+    data = '{'+data[0][start: end]+'}'
     data = re.sub('\\"',"\"",data) # replace \qoutes with qoutes
     dataJson = json.loads(data)
     props = dataJson['require'][10][3][0]['props']
