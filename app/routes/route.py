@@ -33,7 +33,8 @@ def sendImage():
         return jsonify({
             "data":data,
             "msg":"erro",
-            "arr":arrData
+            "arr":arrData,
+            "text":get_resp.text
             })
     
     start = data[0].find('"require"') 
