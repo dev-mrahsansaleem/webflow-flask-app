@@ -26,24 +26,29 @@ def sendImage():
     url = request.args.get('url')
 
     get_resp = requests.get(url = url)
+    # return str(get_resp.text.find('"require"') )
     # data = re.sub('\s+',"",data) # remove all spaces
-    arrData = re.split('<\/?script>',get_resp.text) # split by script open close tags
-    data = [x for x in arrData if "props" in x]
-    if len(data) <= 0 :
-        return jsonify({
-            "data":data,
-            "msg":"erro",
-            "arr":arrData,
-            "text":get_resp.text
-            })
+    # arrData = re.split('<\/?script>',get_resp.text) # split by script open close tags
+    # data = [x for x in arrData if "props" in x]
+    # if len(data) <= 0 :
+    #     return jsonify({
+    #         "data":data,
+    #         "msg":"erro",
+    #         "arr":arrData,
+    #         "text":get_resp.text
+    #         })
     
-    start = data[0].find('"require"') 
-    end = data[0].rfind(',"contexts')
-    data = '{'+data[0][start: end]+'}'
+    start = get_resp.text.find('"require":[["W') 
+    end = get_resp.text.rfind(',"contexts')
+    data = '{'+get_resp.text[start: end]+'}'
     data = re.sub('\\"',"\"",data) # replace \qoutes with qoutes
     dataJson = json.loads(data)
     props = dataJson['require'][10][3][0]['props']
-    
+    if not props['deeplinkAdCard']:
+        return jsonify({
+            "msg":"snapshot not found",
+            "data":props
+        })
     data = {
         "fields": {
             "name": props['deeplinkAdID'], #need to change to find ad title always
