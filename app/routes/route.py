@@ -118,7 +118,7 @@ def sendImage():
             "sitePublishQueued" : sitePublishQueued
             })
     except:
-        return jsonify({"text":requests.get(url = url).text,"parsed":dataJson})
+        return jsonify({"text":"tempriary blocked due to unusual trafic","parsed":dataJson})
 
 
 
