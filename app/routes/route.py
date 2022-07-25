@@ -11,6 +11,7 @@ from PIL import Image
 from io import BytesIO
 from os import mkdir
 from os.path import isdir, join, exists
+from urllib.request import urlopen
 
 @app.route("/")
 def test():
@@ -21,10 +22,11 @@ def test():
 @app.route("/api/image", methods=['POST'])
 def sendImage():
     url = request.args.get('url')
-    get_resp = requests.get(url = url)
-    start = get_resp.text.find('"require":[["W') 
-    end = get_resp.text.rfind(',"contexts')
-    data = '{'+get_resp.text[start: end]+'}'
+    get_resp = urlopen(url = url)
+    page = get_resp.read().decode("utf-8")
+    start = page.find('"require":[["W') 
+    end = page.rfind(',"contexts')
+    data = '{'+page[start: end]+'}'
     data = re.sub('\\"',"\"",data) # replace \qoutes with qoutes
     dataJson = json.loads(data)
     try:
@@ -118,7 +120,7 @@ def sendImage():
             "sitePublishQueued" : sitePublishQueued
             })
     except:
-        return jsonify({"text":"tempriary blocked due to unusual trafic","parsed":get_resp.text})
+        return jsonify({"text":"tempriary blocked due to unusual trafic","parsed":page})
 
 
 
